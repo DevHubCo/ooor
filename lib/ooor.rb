@@ -7,6 +7,7 @@ require 'active_support/dependencies/autoload'
 require 'active_support/concern'
 require 'active_support/cache'
 require 'logger'
+require 'byebug'
 
 
 module Ooor

@@ -124,17 +124,17 @@ module Ooor
     def lazy_load(meth, *args)
       @lazy = false
       fields = (self.class.fast_fields + [meth]).uniq
-      load(rpc_execute('read', [@attributes["id"]], fields, *args || context)[0]).tap do
+      load(rpc_execute('read', [@ooor_attributes["id"]], fields, *args || context)[0]).tap do
         @lazy = false
       end
     end
 
     def get_attribute(meth, *args)
-      lazy_load(meth, *args) if @lazy && @attributes["id"] && !@attributes.has_key?(meth)
-      if @attributes.has_key?(meth)
-        @attributes[meth]
-      elsif @attributes["id"] # if field is computed for instance
-        @attributes[meth] = rpc_execute('read', [@attributes["id"]], [meth], *args || context)[0][meth]
+      lazy_load(meth, *args) if @lazy && @ooor_attributes["id"] && !@ooor_attributes.has_key?(meth)
+      if @ooor_attributes.has_key?(meth)
+        @ooor_attributes[meth]
+      elsif @ooor_attributes["id"] # if field is computed for instance
+        @ooor_attributes[meth] = rpc_execute('read', [@ooor_attributes["id"]], [meth], *args || context)[0][meth]
       else
         nil
       end
@@ -142,9 +142,9 @@ module Ooor
 
     def set_attribute(meth, *args)
       value = sanitize_attribute(meth, args[0])
-      @attributes[meth] ||= nil
-      send("#{meth}_will_change!") unless @attributes[meth] == value
-      @attributes[meth] = value
+      @ooor_attributes[meth] ||= nil
+      send("#{meth}_will_change!") unless @ooor_attributes[meth] == value
+      @ooor_attributes[meth] = value
     end
 
     def get_association(meth, *args)
@@ -155,8 +155,8 @@ module Ooor
       elsif @associations.has_key?(meth)
         @loaded_associations[meth] = relationnal_result(meth, *args)
       else
-        if @attributes["id"]
-          @associations[meth] = rpc_execute('read', [@attributes["id"]], [meth], *args || context)[0][meth]
+        if @ooor_attributes["id"]
+          @associations[meth] = rpc_execute('read', [@ooor_attributes["id"]], [meth], *args || context)[0][meth]
           @loaded_associations[meth] = relationnal_result(meth, *args)
         elsif self.class.one2many_associations.has_key?(meth) || self.class.many2many_associations.has_key?(meth)
           load_x2m_association(meth, [], *args)

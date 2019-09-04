@@ -87,7 +87,7 @@ module Ooor
       self.class.reload_fields_definition(false)
       raise ArgumentError, "expected an attributes Hash, got #{attributes.inspect}" unless attributes.is_a?(Hash)
       @associations ||= {}
-      @attributes ||= {}
+      @ooor_attributes ||= {}
       @loaded_associations = {}
       attributes.each do |key, value|
         self.send "#{key}=", value if self.respond_to?("#{key}=")
@@ -98,7 +98,7 @@ module Ooor
     #takes care of reading OpenERP default field values.
     def initialize(attributes = {}, default_get_list = false, persisted = false, has_changed = false, lazy = false)
       self.class.reload_fields_definition(false)
-      @attributes = {}
+      @ooor_attributes = {}
       @ir_model_data_id = attributes.delete(:ir_model_data_id)
       @marked_for_destruction = false
       @persisted = persisted
@@ -244,6 +244,10 @@ module Ooor
 
     alias_method :validate, :valid?
 
+    def attributes
+      @ooor_attributes
+    end
+
   protected
 
     # Real validations happens on OpenERP side, only pre-validations can happen here eventually
@@ -332,13 +336,13 @@ module Ooor
       attributes = HashWithIndifferentAccess.new(defaults.merge(attributes.reject {|k, v| v.blank? }))
       load(attributes)
     end
-      
+
     def load_on_change_result(result, field_name, field_value)
       if result["warning"]
         self.class.logger.info result["warning"]["title"]
         self.class.logger.info result["warning"]["message"]
       end
-      attrs = @attributes.merge(field_name => field_value)
+      attrs = @ooor_attributes.merge(field_name => field_value)
       attrs.merge!(result["value"])
       load(attrs)
     end

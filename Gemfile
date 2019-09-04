@@ -17,6 +17,8 @@ group :test do
   end
 end
 
+gem "byebug"
+
 group :development do
   gem 'rake'
 end

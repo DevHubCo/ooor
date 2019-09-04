@@ -109,7 +109,7 @@ module Ooor
         false
       elsif value == false && type != 'boolean'
         nil
-      elsif (type == 'char' || type == 'text') && value == "" && @attributes[skey] == nil
+      elsif (type == 'char' || type == 'text') && value == "" && @ooor_attributes[skey] == nil
         nil
       else
         value
@@ -150,7 +150,7 @@ module Ooor
       attribute_keys, association_keys = get_changed_values
       associations = {}
       association_keys.each { |k| associations[k] = self.cast_association(k) }
-      @attributes.slice(*attribute_keys).merge(associations)
+      @ooor_attributes.slice(*attribute_keys).merge(associations)
     end
 
     def get_changed_values
