@@ -475,7 +475,8 @@ describe Ooor do
       end
 
       it "should have a 'first' method" do
-        expect(ResUsers.first.id).to eq(1)
+        first_user_id = ['12.0'].include?(OOOR_ODOO_VERSION) ? 2 : 1
+        expect(ResUsers.first.id).to eq(first_user_id)
       end
 
       it "should have a 'last' method" do
@@ -702,7 +703,8 @@ describe Ooor do
 
       with_ooor_session(url: OOOR_URL, username: 'demo', password: 'demo', database: OOOR_DATABASE) do |session|
         h = session['res.users'].read([1], ["password"])
-        expect(h[0]['password']).to eq("********")
+        password = ['12.0'].include?(OOOR_ODOO_VERSION) ? "" : "********"
+        expect(h[0]['password']).to eq(password)
       end
 
       with_ooor_default_session(url: OOOR_URL, username: OOOR_USERNAME, password: OOOR_PASSWORD, database: OOOR_DATABASE) do |session|
